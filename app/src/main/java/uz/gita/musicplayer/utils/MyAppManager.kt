@@ -3,5 +3,7 @@ package uz.gita.musicplayer.utils
 import android.database.Cursor
 
 object MyAppManager {
-    val cursor: Cursor? = null
+    var musicPosition: Int = -1
+    var cursor: Cursor? = null
+
 }
