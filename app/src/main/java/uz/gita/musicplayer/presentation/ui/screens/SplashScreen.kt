@@ -21,6 +21,7 @@ class SplashScreen : Fragment(R.layout.screen_splash) {
         requireActivity().checkPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             requireContext().getMusicsCursor().onEach {
                 MyAppManager.cursor = it
+                MyAppManager.selectMusicPos = 0
                 findNavController().navigate(SplashScreenDirections.actionSplashScreenToMusicListScreen())
             }.launchIn(lifecycleScope)
         }
