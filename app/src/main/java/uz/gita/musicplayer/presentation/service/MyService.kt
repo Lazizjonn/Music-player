@@ -1,6 +1,5 @@
 package uz.gita.musicplayer.presentation.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -30,6 +29,8 @@ class MyService : Service() {
     private val mediaPlayer get() = _mediaPlayer!!
     private val scope = CoroutineScope(Dispatchers.IO + Job())
     private var job: Job? = null
+    private var jobSelection: Job? = null
+    private val scopeSelection = CoroutineScope(Dispatchers.Main + Job())
 
     override fun onCreate() {
         super.onCreate()
@@ -37,12 +38,19 @@ class MyService : Service() {
         createChannel()
         createForegroundService()
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createForegroundService()
         val command = intent!!.extras?.getSerializable("COMMAND") as ActionEnum
-        doneCommand(command)
+        jobSelection?.cancel()
+        jobSelection = scopeSelection.launch {
+            delay(100)
+            doneCommand(command)
+        }
+
         return START_NOT_STICKY
     }
+
     override fun onDestroy() {
         super.onDestroy()
         job?.cancel()
@@ -57,14 +65,17 @@ class MyService : Service() {
             .build()
         startForeground(1, notification)
     }
+
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
-            val channel = NotificationChannel("DEMO", CHANNEL, NotificationManager.IMPORTANCE_DEFAULT)
+            val channel =
+                NotificationChannel("DEMO", CHANNEL, NotificationManager.IMPORTANCE_DEFAULT)
             channel.setSound(null, null)
             val service = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(channel)
         }
     }
+
     private fun createRemoteView(): RemoteViews {
         val view = RemoteViews(this.packageName, R.layout.remote_view)
         val musicData = MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
@@ -82,13 +93,21 @@ class MyService : Service() {
 
         return view
     }
+
     private fun createPendingIntent(action: ActionEnum): PendingIntent {
         val intent = Intent(this, MyService::class.java)
         intent.putExtra("COMMAND", action)
-        return PendingIntent.getService(this, action.pos, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        return PendingIntent.getService(
+            this,
+            action.pos,
+            intent,
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
+
     private fun doneCommand(lastCommand: ActionEnum) {
-        val data: MusicData = MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
+        val data: MusicData =
+            MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
         when (lastCommand) {
             ActionEnum.MANAGE -> {
                 if (mediaPlayer.isPlaying) doneCommand(ActionEnum.PAUSE)
@@ -106,7 +125,7 @@ class MyService : Service() {
                 MyAppManager.fullTime = data.duration!!
                 mediaPlayer.seekTo(MyAppManager.currentTime.toInt())
 
-                job?.let { it.cancel() }
+                job?.cancel()
                 job = scope.launch {
                     changeProgress().collectLatest {
                         MyAppManager.currentTime = it
@@ -121,7 +140,7 @@ class MyService : Service() {
             }
             ActionEnum.PAUSE -> {
                 mediaPlayer.stop()
-                job?.let { it.cancel() }
+                job?.cancel()
                 MyAppManager.isPlaying = false
                 MyAppManager.isPlayingLiveData.value = false
                 createForegroundService()
@@ -154,6 +173,7 @@ class MyService : Service() {
             }
         }
     }
+
     private fun changeProgress(): Flow<Long> = flow {
         MyAppManager.currentTimeLiveData.postValue(MyAppManager.currentTime)
         while ((MyAppManager.currentTimeLiveData.value ?: 0) <= MyAppManager.fullTime) {
