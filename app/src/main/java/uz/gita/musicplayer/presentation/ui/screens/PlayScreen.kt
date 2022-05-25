@@ -6,11 +6,11 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import uz.gita.musicplayer.R
@@ -25,8 +25,18 @@ class PlayScreen : Fragment(R.layout.screen_play) {
     private val binding by viewBinding(ScreenPlayBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        clicks()
+        clicksAndSeekBarChange()
+        liveData()
+    }
+
+    private fun clicksAndSeekBarChange() {
+        binding.buttonNext.setOnClickListener { startMyService(ActionEnum.NEXT) }
+        binding.buttonPrev.setOnClickListener { startMyService(ActionEnum.PREV) }
+        binding.buttonManage.setOnClickListener { startMyService(ActionEnum.MANAGE) }
+        binding.back.setOnClickListener { findNavController().navigateUp() }
         binding.seekBarScreen.setOnSeekBarChangeListener(SeekBarListener)
+    }
+    private fun liveData() {
         MyAppManager.playMusicLiveData.observe(viewLifecycleOwner, playMusicObserver)
         MyAppManager.isPlayingLiveData.observe(viewLifecycleOwner, isPlayingObserver)
         MyAppManager.currentTimeLiveData.observe(viewLifecycleOwner, currentTimeObserver)
@@ -74,27 +84,12 @@ class PlayScreen : Fragment(R.layout.screen_play) {
         binding.currentTime.text = time
     }
 
+
     private fun startMyService(action: ActionEnum) {
         val intent = Intent(requireContext(), MyService::class.java)
         intent.putExtra("COMMAND", action)
         if (Build.VERSION.SDK_INT >= 26) requireActivity().startForegroundService(intent)
         else requireActivity().startService(intent)
-    }
-    private fun clicks() {
-        binding.buttonNext.setOnClickListener { startMyService(ActionEnum.NEXT) }
-        binding.buttonPrev.setOnClickListener { startMyService(ActionEnum.PREV) }
-        binding.buttonManage.setOnClickListener { startMyService(ActionEnum.MANAGE) }
-    }
-    private object SeekBarListener : SeekBar.OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            if (fromUser) {
-                currentTime = progress.toLong()
-                MyAppManager.currentTimeLiveData.value = currentTime
-                MyAppManager.mediaPlayer.seekTo(currentTime.toInt())
-            }
-        }
-        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     }
     private fun getAlbumImage(path: String): Bitmap? {
         val mmr = MediaMetadataRetriever()
@@ -104,5 +99,19 @@ class PlayScreen : Fragment(R.layout.screen_play) {
             data != null -> BitmapFactory.decodeByteArray(data, 0, data.size)
             else -> null
         }
+    }
+
+
+    private object SeekBarListener : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            if (fromUser) {
+                currentTime = progress.toLong()
+                MyAppManager.currentTimeLiveData.value = currentTime
+                MyAppManager.mediaPlayer.seekTo(currentTime.toInt())
+            }
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     }
 }

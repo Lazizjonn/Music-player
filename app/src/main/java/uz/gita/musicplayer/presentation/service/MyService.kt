@@ -32,29 +32,28 @@ class MyService : Service() {
     private var jobSelection: Job? = null
     private val scopeSelection = CoroutineScope(Dispatchers.Main + Job())
 
+
     override fun onCreate() {
         super.onCreate()
         _mediaPlayer = MediaPlayer()
         createChannel()
         createForegroundService()
     }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        createForegroundService()
         val command = intent!!.extras?.getSerializable("COMMAND") as ActionEnum
         jobSelection?.cancel()
         jobSelection = scopeSelection.launch {
-            delay(100)
+            delay(200)
             doneCommand(command)
         }
-
         return START_NOT_STICKY
     }
-
     override fun onDestroy() {
         super.onDestroy()
         job?.cancel()
+        jobSelection?.cancel()
     }
+
 
     private fun createForegroundService() {
         val notification = NotificationCompat.Builder(this, CHANNEL)
@@ -65,7 +64,6 @@ class MyService : Service() {
             .build()
         startForeground(1, notification)
     }
-
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
             val channel =
@@ -75,7 +73,6 @@ class MyService : Service() {
             service.createNotificationChannel(channel)
         }
     }
-
     private fun createRemoteView(): RemoteViews {
         val view = RemoteViews(this.packageName, R.layout.remote_view)
         val musicData = MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
@@ -93,7 +90,6 @@ class MyService : Service() {
 
         return view
     }
-
     private fun createPendingIntent(action: ActionEnum): PendingIntent {
         val intent = Intent(this, MyService::class.java)
         intent.putExtra("COMMAND", action)
@@ -104,18 +100,22 @@ class MyService : Service() {
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
-
     private fun doneCommand(lastCommand: ActionEnum) {
-        val data: MusicData =
-            MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
+        val data: MusicData = MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
         when (lastCommand) {
             ActionEnum.MANAGE -> {
                 if (mediaPlayer.isPlaying) doneCommand(ActionEnum.PAUSE)
                 else doneCommand(ActionEnum.PLAY)
             }
             ActionEnum.PLAY -> {
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.stop()
+                /*   if (mediaPlayer.isPlaying) {
+                       mediaPlayer.stop()
+                       _mediaPlayer = null
+                   }*/
+                if (_mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying) mediaPlayer.stop()
+                    mediaPlayer.reset()
+                    mediaPlayer.release()
                     _mediaPlayer = null
                 }
                 _mediaPlayer = MediaPlayer.create(this, Uri.fromFile(File(data.data ?: "")))
@@ -168,12 +168,19 @@ class MyService : Service() {
                 }
             }
             ActionEnum.CANCEL -> {
-                mediaPlayer.stop()
+                if (_mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying) mediaPlayer.stop()
+                    mediaPlayer.reset()
+                    mediaPlayer.release()
+                    _mediaPlayer = null
+                }
+                MyAppManager.selectMusicPos = 0
+                MyAppManager.isPlaying = false
+                MyAppManager.isPlayingLiveData.value = false
                 stopSelf()
             }
         }
     }
-
     private fun changeProgress(): Flow<Long> = flow {
         MyAppManager.currentTimeLiveData.postValue(MyAppManager.currentTime)
         while ((MyAppManager.currentTimeLiveData.value ?: 0) <= MyAppManager.fullTime) {

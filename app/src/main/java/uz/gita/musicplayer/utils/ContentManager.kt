@@ -7,16 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import uz.gita.musicplayer.data.model.common.MusicData
 
-/*
-*data class MusicData(
-    val id: Int,
-    val artist: String?,
-    val title: String?,
-    val data: String?,
-    val duration: Long?
-)
-* */
-
 private val projection = arrayOf(
     MediaStore.Audio.Media._ID,
     MediaStore.Audio.Media.ARTIST,

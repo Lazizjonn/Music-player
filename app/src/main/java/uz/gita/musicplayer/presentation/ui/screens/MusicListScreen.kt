@@ -6,10 +6,10 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.liveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -25,19 +25,43 @@ import uz.gita.musicplayer.utils.getMusicDataByPosition
 
 
 class MusicListScreen : Fragment(R.layout.screen_music_list) {
-
     private val binding by viewBinding(ScreenMusicListBinding::bind)
     private val adapter = MyCursorAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setAdapter()
+        liveData()
         clicks()
+        firstMusicToBottomPart()
+    }
+
+
+    private fun setAdapter() {
+        adapter.cursor = MyAppManager.cursor
+        binding.musicList.layoutManager = LinearLayoutManager(requireContext())
+        binding.musicList.adapter = adapter
+        adapter.setSelectMusicPosition {
+            MyAppManager.selectMusicPos = it
+            MyAppManager.currentTime = 0
+            startMyService(ActionEnum.PLAY)
+        }
+    }
+    private fun liveData () {
         MyAppManager.playMusicLiveData.observe(viewLifecycleOwner, playMusicObserver)
         MyAppManager.isPlayingLiveData.observe(viewLifecycleOwner, isPlayingObserver)
-
+    }
+    private fun clicks() {
+        binding.bottomPart.setOnClickListener {
+            findNavController().navigate(MusicListScreenDirections.actionMusicListScreenToPlayScreen())
+        }
+        binding.buttonNextScreen.setOnClickListener { startMyService(ActionEnum.NEXT) }
+        binding.buttonPrevScreen.setOnClickListener { startMyService(ActionEnum.PREV) }
+        binding.buttonManageScreen.setOnClickListener { startMyService(ActionEnum.MANAGE) }
+    }
+    private fun firstMusicToBottomPart () {
         val musicData = MyAppManager.cursor?.getMusicDataByPosition(MyAppManager.selectMusicPos)!!
         binding.textMusicNameScreen.text = musicData.title!!
-        binding.textArtistNameScreen.text =musicData.artist!!
+        binding.textArtistNameScreen.text = musicData.artist!!
         if (musicData.data != null) {
             if (getAlbumImage(musicData.data) == null) Glide
                 .with(binding.imageMusic)
@@ -48,8 +72,8 @@ class MusicListScreen : Fragment(R.layout.screen_music_list) {
                 .load(getAlbumImage(musicData.data))
                 .into(binding.imageMusic)
         }
-
     }
+
 
     private val playMusicObserver = Observer<MusicData> { data ->
         binding.textMusicNameScreen.text = data.title
@@ -70,24 +94,7 @@ class MusicListScreen : Fragment(R.layout.screen_music_list) {
         else binding.buttonManageScreen.setImageResource(R.drawable.ic_play)
     }
 
-    private fun setAdapter() {
-        adapter.cursor = MyAppManager.cursor
-        binding.musicList.layoutManager = LinearLayoutManager(requireContext())
-        binding.musicList.adapter = adapter
-        adapter.setSelectMusicPosition {
-            MyAppManager.selectMusicPos = it
-            MyAppManager.currentTime = 0
-            startMyService(ActionEnum.PLAY)
-        }
-    }
-    private fun clicks() {
-        binding.bottomPart.setOnClickListener {
-            findNavController().navigate(MusicListScreenDirections.actionMusicListScreenToPlayScreen())
-        }
-        binding.buttonNextScreen.setOnClickListener { startMyService(ActionEnum.NEXT) }
-        binding.buttonPrevScreen.setOnClickListener { startMyService(ActionEnum.PREV) }
-        binding.buttonManageScreen.setOnClickListener { startMyService(ActionEnum.MANAGE) }
-    }
+
     private fun startMyService(action: ActionEnum) {
         val intent = Intent(requireContext(), MyService::class.java)
         intent.putExtra("COMMAND", action)
@@ -104,20 +111,4 @@ class MusicListScreen : Fragment(R.layout.screen_music_list) {
         }
     }
 
-  /*  override fun onDestroy() {
-        Log.d("TTT", "onDestroy")
-        super.onDestroy()
-        if (!MyAppManager.isPlaying) {
-            myService!!.stopSelf()
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("TTT", "onStop")
-        if (!MyAppManager.isPlaying) {
-            myService!!.stopSelf()
-            Log.d("TTT", "onStop2")
-        }
-    }*/
 }

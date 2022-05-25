@@ -16,7 +16,6 @@ import uz.gita.musicplayer.utils.getMusicsCursor
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreen : Fragment(R.layout.screen_splash) {
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().checkPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             requireContext().getMusicsCursor().onEach {
