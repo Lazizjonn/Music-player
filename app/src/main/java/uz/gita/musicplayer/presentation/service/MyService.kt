@@ -55,6 +55,14 @@ class MyService : Service() {
     }
 
 
+    private fun createChannel() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            val channel = NotificationChannel("DEMO", CHANNEL, NotificationManager.IMPORTANCE_DEFAULT)
+            channel.setSound(null, null)
+            val service = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            service.createNotificationChannel(channel)
+        }
+    }
     private fun createForegroundService() {
         val notification = NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.musicpicture)
@@ -63,15 +71,6 @@ class MyService : Service() {
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .build()
         startForeground(1, notification)
-    }
-    private fun createChannel() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            val channel =
-                NotificationChannel("DEMO", CHANNEL, NotificationManager.IMPORTANCE_DEFAULT)
-            channel.setSound(null, null)
-            val service = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            service.createNotificationChannel(channel)
-        }
     }
     private fun createRemoteView(): RemoteViews {
         val view = RemoteViews(this.packageName, R.layout.remote_view)
@@ -121,7 +120,11 @@ class MyService : Service() {
                 _mediaPlayer = MediaPlayer.create(this, Uri.fromFile(File(data.data ?: "")))
                 MyAppManager.mediaPlayer = mediaPlayer
                 mediaPlayer.start()
-                mediaPlayer.setOnCompletionListener { doneCommand(ActionEnum.NEXT) }
+                mediaPlayer.setOnCompletionListener {
+                    if (MyAppManager.isPlaying) {
+                        doneCommand(ActionEnum.NEXT)
+                    }
+                }
                 MyAppManager.fullTime = data.duration!!
                 mediaPlayer.seekTo(MyAppManager.currentTime.toInt())
 
