@@ -1,11 +1,11 @@
-package uz.gita.musicplayer.utils
+package uz.gita.musicplayer_slp.utils
 
 import android.content.Context
 import android.database.Cursor
 import android.provider.MediaStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import uz.gita.musicplayer.data.model.common.MusicData
+import uz.gita.musicplayer_slp.data.model.common.MusicData
 
 private val projection = arrayOf(
     MediaStore.Audio.Media._ID,

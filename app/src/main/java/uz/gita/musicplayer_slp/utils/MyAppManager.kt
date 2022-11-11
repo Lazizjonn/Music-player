@@ -1,9 +1,9 @@
-package uz.gita.musicplayer.utils
+package uz.gita.musicplayer_slp.utils
 
 import android.database.Cursor
 import android.media.MediaPlayer
 import androidx.lifecycle.MutableLiveData
-import uz.gita.musicplayer.data.model.common.MusicData
+import uz.gita.musicplayer_slp.data.model.common.MusicData
 
 object MyAppManager {
     var selectMusicPos: Int = -1

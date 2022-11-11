@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.data.model.common
+package uz.gita.musicplayer_slp.data.model.common
 
 data class MusicData(
     val id: Int?,

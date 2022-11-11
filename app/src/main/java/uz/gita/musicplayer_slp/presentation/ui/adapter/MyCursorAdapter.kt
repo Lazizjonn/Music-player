@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.presentation.ui.adapter
+package uz.gita.musicplayer_slp.presentation.ui.adapter
 
 import android.database.Cursor
 import android.graphics.Bitmap
@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import uz.gita.musicplayer.databinding.ItemMusicBinding
-import uz.gita.musicplayer.utils.getMusicDataByPosition
+import uz.gita.musicplayer_slp.databinding.ItemMusicBinding
+import uz.gita.musicplayer_slp.utils.getMusicDataByPosition
 
 class MyCursorAdapter() : RecyclerView.Adapter<MyCursorAdapter.MyCursorViewHolder>() {
     var cursor: Cursor? = null
@@ -51,7 +51,7 @@ class MyCursorAdapter() : RecyclerView.Adapter<MyCursorAdapter.MyCursorViewHolde
         val data: ByteArray? = mmr.embeddedPicture
         return when {
             data != null -> BitmapFactory.decodeByteArray(data, 0, data.size)
-            else -> null
+                    else -> null
         }
     }
 }

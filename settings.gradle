@@ -16,5 +16,5 @@ dependencyResolutionManagement {
         jcenter()
     }
 }
-rootProject.name = "MusicPlayer"
+rootProject.name = "MusicPlayer_slp"
 include ':app'

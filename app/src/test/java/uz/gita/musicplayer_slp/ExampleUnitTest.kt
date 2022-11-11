@@ -1,4 +1,4 @@
-package uz.gita.musicplayer
+package uz.gita.musicplayer_slp
 
 import org.junit.Test
 

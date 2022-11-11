@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.utils
+package uz.gita.musicplayer_slp.utils
 
 import android.app.Activity
 import android.content.Context

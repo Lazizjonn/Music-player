@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.utils
+package uz.gita.musicplayer_slp.utils
 
 import android.widget.SeekBar
 

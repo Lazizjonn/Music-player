@@ -6,7 +6,7 @@
     app:startDestination="@id/splashScreen">
     <fragment
         android:id="@+id/musicListScreen"
-        android:name="uz.gita.musicplayer.presentation.ui.screens.MusicListScreen"
+        android:name="uz.gita.musicplayer_slp.presentation.ui.screens.MusicListScreen"
         android:label="screen_music_list"
         tools:layout="@layout/screen_music_list" >
         <action
@@ -15,12 +15,12 @@
     </fragment>
     <fragment
         android:id="@+id/playScreen"
-        android:name="uz.gita.musicplayer.presentation.ui.screens.PlayScreen"
+        android:name="uz.gita.musicplayer_slp.presentation.ui.screens.PlayScreen"
         android:label="screen_play"
         tools:layout="@layout/screen_play" />
     <fragment
         android:id="@+id/splashScreen"
-        android:name="uz.gita.musicplayer.presentation.ui.screens.SplashScreen"
+        android:name="uz.gita.musicplayer_slp.presentation.ui.screens.SplashScreen"
         android:label="screen_splash"
         tools:layout="@layout/screen_splash" >
         <action

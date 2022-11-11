@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.presentation.ui.screens
+package uz.gita.musicplayer_slp.presentation.ui.screens
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,10 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import uz.gita.musicplayer.R
-import uz.gita.musicplayer.utils.MyAppManager
-import uz.gita.musicplayer.utils.checkPermissions
-import uz.gita.musicplayer.utils.getMusicsCursor
+import uz.gita.musicplayer_slp.R
+import uz.gita.musicplayer_slp.utils.MyAppManager
+import uz.gita.musicplayer_slp.utils.checkPermissions
+import uz.gita.musicplayer_slp.utils.getMusicsCursor
 
 @SuppressLint("CustomSplashScreen")
 class SplashScreen : Fragment(R.layout.screen_splash) {

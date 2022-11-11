@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.presentation.service
+package uz.gita.musicplayer_slp.presentation.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -15,11 +15,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
-import uz.gita.musicplayer.R
-import uz.gita.musicplayer.data.model.common.ActionEnum
-import uz.gita.musicplayer.data.model.common.MusicData
-import uz.gita.musicplayer.utils.MyAppManager
-import uz.gita.musicplayer.utils.getMusicDataByPosition
+import uz.gita.musicplayer_slp.R
+import uz.gita.musicplayer_slp.data.model.common.ActionEnum
+import uz.gita.musicplayer_slp.data.model.common.MusicData
+import uz.gita.musicplayer_slp.utils.MyAppManager
+import uz.gita.musicplayer_slp.utils.getMusicDataByPosition
 import java.io.File
 
 class MyService : Service() {

@@ -1,4 +1,4 @@
-package uz.gita.musicplayer.presentation.ui.screens
+package uz.gita.musicplayer_slp.presentation.ui.screens
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,13 +13,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
-import uz.gita.musicplayer.R
-import uz.gita.musicplayer.data.model.common.ActionEnum
-import uz.gita.musicplayer.data.model.common.MusicData
-import uz.gita.musicplayer.databinding.ScreenPlayBinding
-import uz.gita.musicplayer.presentation.service.MyService
-import uz.gita.musicplayer.utils.MyAppManager
-import uz.gita.musicplayer.utils.MyAppManager.currentTime
+import uz.gita.musicplayer_slp.R
+import uz.gita.musicplayer_slp.data.model.common.ActionEnum
+import uz.gita.musicplayer_slp.data.model.common.MusicData
+import uz.gita.musicplayer_slp.databinding.ScreenPlayBinding
+import uz.gita.musicplayer_slp.presentation.service.MyService
+import uz.gita.musicplayer_slp.utils.MyAppManager
+import uz.gita.musicplayer_slp.utils.MyAppManager.currentTime
 
 class PlayScreen : Fragment(R.layout.screen_play) {
     private val binding by viewBinding(ScreenPlayBinding::bind)
@@ -91,6 +91,7 @@ class PlayScreen : Fragment(R.layout.screen_play) {
         if (Build.VERSION.SDK_INT >= 26) requireActivity().startForegroundService(intent)
         else requireActivity().startService(intent)
     }
+
     private fun getAlbumImage(path: String): Bitmap? {
         val mmr = MediaMetadataRetriever()
         mmr.setDataSource(path)
